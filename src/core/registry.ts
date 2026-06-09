@@ -3,6 +3,7 @@ import { titleConverter } from "./converters/title.js";
 import { buttonConverter } from "./converters/button.js";
 import { singleInputConverter } from "./converters/singleInput.js";
 import { inputTableConverter } from "./converters/inputTable.js";
+import { gridConverter } from "./converters/grid.js";
 
 const registry = new Map<SnippetType, Converter>();
 
@@ -28,3 +29,4 @@ registerConverter(titleConverter);
 registerConverter(buttonConverter);
 registerConverter(singleInputConverter);
 registerConverter(inputTableConverter);
+registerConverter(gridConverter);
