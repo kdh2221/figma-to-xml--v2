@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:userPalette defaultIcon="i_group.png" desc="" />
+		<xf:model>
+			<xf:instance>
+				<data xmlns="" />
+			</xf:instance>
+		</xf:model>
+		<script type="text/javascript"><![CDATA[ ]]></script>
+	</head>
+	<body>
+		<xf:group class="titbox" id="" style="">
+			<xf:group id="" class="lt">
+				<w2:textbox tagname="" style="" id="" label="타이틀(제목)" class="tit_main"></w2:textbox>
+			</xf:group>
+			<xf:group class="rt" id="" style="">
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
