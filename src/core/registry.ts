@@ -1,4 +1,5 @@
 import type { Converter, ConvertResult, FigmaNode, SnippetType } from "./types.js";
+import { titleConverter } from "./converters/title.js";
 
 const registry = new Map<SnippetType, Converter>();
 
@@ -19,3 +20,5 @@ export function convert(node: FigmaNode, type: SnippetType): ConvertResult {
 export function registeredTypes(): SnippetType[] {
   return [...registry.keys()];
 }
+
+registerConverter(titleConverter);
