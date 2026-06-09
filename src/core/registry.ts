@@ -1,6 +1,7 @@
 import type { Converter, ConvertResult, FigmaNode, SnippetType } from "./types.js";
 import { titleConverter } from "./converters/title.js";
 import { buttonConverter } from "./converters/button.js";
+import { singleInputConverter } from "./converters/singleInput.js";
 
 const registry = new Map<SnippetType, Converter>();
 
@@ -24,3 +25,4 @@ export function registeredTypes(): SnippetType[] {
 
 registerConverter(titleConverter);
 registerConverter(buttonConverter);
+registerConverter(singleInputConverter);
