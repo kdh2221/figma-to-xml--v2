@@ -4,6 +4,40 @@ import { collectTextNodes, textOf } from "../extract.js";
 
 type GridSlots = { columns: { label: string; width: number }[]; height: number } & Record<string, unknown>;
 
+/** 그리드 루트 XmlEl 빌드 (다른 변환기에서 재사용 가능) */
+export function buildGrid(slots: GridSlots): XmlEl {
+  const headerColumns: XmlEl[] = slots.columns.map((c, i) =>
+    el("w2:column", {
+      blockSelect: "false", displayMode: "label", id: `column${i + 1}`,
+      inputType: "text", removeBorderStyle: "false", value: c.label, width: String(c.width),
+    })
+  );
+  const bodyColumns: XmlEl[] = slots.columns.map((c, i) =>
+    el("w2:column", {
+      blockSelect: "false", displayMode: "label", id: `col${i + 1}`,
+      inputType: "text", removeBorderStyle: "false", width: String(c.width),
+    })
+  );
+
+  return el("xf:group", { adaptiveThreshold: "", class: "gvwbox", id: "", style: "" }, [
+    el(
+      "w2:gridView",
+      {
+        autoFit: "allColumn", class: "gvw", dataList: "data:dataList1",
+        focusMode: "row", id: "", style: `height: ${slots.height}px;`,
+      },
+      [
+        el("w2:header", { id: "header1", style: "" }, [
+          el("w2:row", { id: "row1", style: "" }, headerColumns),
+        ]),
+        el("w2:gBody", { id: "gBody1", style: "" }, [
+          el("w2:row", { id: "row2", style: "" }, bodyColumns),
+        ]),
+      ]
+    ),
+  ]);
+}
+
 export const gridConverter: Converter<GridSlots> = {
   type: "grid",
   extract(node: FigmaNode) {
@@ -16,37 +50,6 @@ export const gridConverter: Converter<GridSlots> = {
     return { slots: { columns, height: Math.round(node.height) }, warnings };
   },
   render(slots: GridSlots) {
-    const headerColumns: XmlEl[] = slots.columns.map((c, i) =>
-      el("w2:column", {
-        blockSelect: "false", displayMode: "label", id: `column${i + 1}`,
-        inputType: "text", removeBorderStyle: "false", value: c.label, width: String(c.width),
-      })
-    );
-    const bodyColumns: XmlEl[] = slots.columns.map((c, i) =>
-      el("w2:column", {
-        blockSelect: "false", displayMode: "label", id: `col${i + 1}`,
-        inputType: "text", removeBorderStyle: "false", width: String(c.width),
-      })
-    );
-
-    return serialize(
-      el("xf:group", { adaptiveThreshold: "", class: "gvwbox", id: "", style: "" }, [
-        el(
-          "w2:gridView",
-          {
-            autoFit: "allColumn", class: "gvw", dataList: "data:dataList1",
-            focusMode: "row", id: "", style: `height: ${slots.height}px;`,
-          },
-          [
-            el("w2:header", { id: "header1", style: "" }, [
-              el("w2:row", { id: "row1", style: "" }, headerColumns),
-            ]),
-            el("w2:gBody", { id: "gBody1", style: "" }, [
-              el("w2:row", { id: "row2", style: "" }, bodyColumns),
-            ]),
-          ]
-        ),
-      ])
-    );
+    return serialize(buildGrid(slots));
   },
 };
