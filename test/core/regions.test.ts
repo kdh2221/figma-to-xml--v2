@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { classifyRegion, analyzeRegions } from "../../src/core/regions.js";
+import { getSnippet } from "../../src/core/snippets/registry.js";
 import type { FigmaNode } from "../../src/core/types.js";
 
 const text = (s: string): FigmaNode => ({
@@ -40,8 +41,19 @@ describe("analyzeRegions", () => {
     ], 1617, 248);
     const regions = analyzeRegions(root);
     expect(regions).toHaveLength(2);
-    expect(regions[0].type).toBe("title");
-    expect(regions[1].type).toBe("grid");
+    expect(regions[0].snippetId).toBe("title-main");
+    expect(regions[1].snippetId).toBe("grid");
     expect(regions[1].texts).toContain("발송");
+  });
+
+  it("assigns an existing snippetId per child", () => {
+    const root: FigmaNode = { id: "r", type: "FRAME", name: "r", width: 800, height: 400, children: [
+      frame("btn_저장", [text("저장")]),
+      frame("grid_목록", [text("번호")]),
+    ]};
+    const regions = analyzeRegions(root);
+    expect(regions).toHaveLength(2);
+    for (const r of regions) expect(getSnippet(r.snippetId)).toBeTruthy();
+    expect(regions[0].snippetId).toBe("button");
   });
 });

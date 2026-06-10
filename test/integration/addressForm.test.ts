@@ -13,7 +13,7 @@ const node = () => toFigmaNode(scene);
 describe("address form (real Figma dump)", () => {
   it("splits into a title region and an inputTable region", () => {
     const regions = analyzeRegions(node());
-    expect(regions.map((r) => r.type)).toEqual(["title", "inputTable"]);
+    expect(regions.map((r) => r.snippetId)).toEqual(["title-main", "table-1"]);
   });
 
   it("reproduces the user-corrected page5_new table structure", () => {

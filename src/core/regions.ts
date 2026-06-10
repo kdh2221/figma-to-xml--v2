@@ -2,6 +2,7 @@ import type { FigmaNode } from "./types.js";
 import { collectTextNodes, textOf } from "./extract.js";
 import { classify, type Kind } from "./converters/pageAbsolute.js";
 import { denoise } from "./denoise.js";
+import { defaultSnippetFor } from "./snippets/registry.js";
 
 /** 영역 단위로 선택 가능한 스니펫 타입 */
 export type RegionType =
@@ -13,7 +14,7 @@ export interface Region {
   /** 원본 노드 id (생성 단계에서 사용자가 고른 타입을 다시 매칭) */
   id: string;
   name: string;
-  type: RegionType;
+  snippetId: string;
   confidence: Confidence;
   texts: string[];
 }
@@ -65,8 +66,8 @@ export function classifyRegion(node: FigmaNode): { type: RegionType; confidence:
 export function analyzeRegions(root: FigmaNode): Region[] {
   const clean = denoise(root);
   return clean.children.map((child) => {
-    const { type, confidence } = classifyRegion(child);
+    const { id, confidence } = defaultSnippetFor(child);
     const texts = collectTextNodes(child).map(textOf).filter((s) => s !== "");
-    return { id: child.id, name: child.name, type, confidence, texts };
+    return { id: child.id, name: child.name, snippetId: id, confidence, texts };
   });
 }
