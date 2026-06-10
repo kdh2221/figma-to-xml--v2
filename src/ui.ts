@@ -12,6 +12,19 @@ $("copy").onclick = () => {
   (navigator as any).clipboard?.writeText(xml);
 };
 
+$("save").onclick = () => {
+  const xml = ($("xml") as HTMLTextAreaElement).value;
+  if (!xml.trim()) return;
+  const snippetType = ($("type") as HTMLSelectElement).value;
+  const blob = new Blob([xml], { type: "application/xml" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `websquare-${snippetType}.xml`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 $("dump").onclick = () => {
   parent.postMessage({ pluginMessage: { type: "dump" } }, "*");
 };

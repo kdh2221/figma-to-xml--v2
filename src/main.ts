@@ -1,6 +1,7 @@
 import type { FigmaNode, SnippetType } from "./core/types.js";
 import { convert } from "./core/registry.js";
 import { collectTextNodes, textOf } from "./core/extract.js";
+import { prettyXml } from "./core/format.js";
 
 /** figma SceneNode의 덕타입(테스트용). 실제로는 figma SceneNode가 들어온다. */
 export interface SceneLike {
@@ -73,7 +74,7 @@ if (typeof figma !== "undefined") {
       if (msg.kind !== undefined) overrides.kind = msg.kind;
       if (msg.cols !== undefined) overrides.cols = msg.cols;
       const result = convert(toFigmaNode(scene), msg.snippetType, overrides);
-      figma.ui.postMessage({ type: "result", xml: result.xml, warnings: result.warnings });
+      figma.ui.postMessage({ type: "result", xml: prettyXml(result.xml), warnings: result.warnings });
     }
     // 픽스처 수집: 현재 선택을 축약 노드 JSON으로 덤프 (테스트 픽스처 박제용)
     if (msg.type === "dump") {
