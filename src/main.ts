@@ -1,7 +1,8 @@
 import type { FigmaNode } from "./core/types.js";
 import { collectTextNodes, textOf } from "./core/extract.js";
 import { prettyXml } from "./core/format.js";
-import { analyzeRegions, type RegionType } from "./core/regions.js";
+import { analyzeRegions } from "./core/regions.js";
+import { catalogDescriptor } from "./core/snippets/registry.js";
 import { assemblePage } from "./core/assemble.js";
 
 /** figma SceneNode의 덕타입(테스트용). 실제로는 figma SceneNode가 들어온다. */
@@ -72,21 +73,21 @@ if (typeof figma !== "undefined") {
   postSelection();
 
   figma.ui.onmessage = (
-    msg: { type: string; typeById?: Record<string, RegionType> }
+    msg: { type: string; snippetById?: Record<string, string> }
   ) => {
     // 자기완결 인식 흐름: 선택 프레임을 영역으로 분석해 추측 타입과 함께 UI로
     if (msg.type === "analyze") {
       const scene = selectedOne();
       if (!scene) return;
       const regions = analyzeRegions(toFigmaNode(scene));
-      figma.ui.postMessage({ type: "regions", regions });
+      figma.ui.postMessage({ type: "regions", regions, catalog: catalogDescriptor() });
       return;
     }
     // 사용자가 확정/수정한 타입 맵으로 페이지 조립
     if (msg.type === "generate") {
       const scene = selectedOne();
       if (!scene) return;
-      const xml = assemblePage(toFigmaNode(scene), msg.typeById ?? {});
+      const xml = assemblePage(toFigmaNode(scene), msg.snippetById ?? {});
       figma.ui.postMessage({ type: "result", xml: prettyXml(xml), warnings: [] });
       return;
     }
