@@ -9,6 +9,8 @@ export interface SceneLike {
   type: string;
   name: string;
   characters?: string;
+  x?: number;
+  y?: number;
   width: number;
   height: number;
   layoutMode?: string;
@@ -26,6 +28,8 @@ export function toFigmaNode(scene: SceneLike): FigmaNode {
     children: (scene.children ?? []).map(toFigmaNode),
   };
   if (scene.characters !== undefined) node.characters = scene.characters;
+  if (scene.x !== undefined) node.x = scene.x;
+  if (scene.y !== undefined) node.y = scene.y;
   if (scene.layoutMode !== undefined && scene.layoutMode !== "NONE") {
     node.layoutMode = scene.layoutMode;
   }

@@ -10,9 +10,9 @@ const text = (s: string): FigmaNode => ({
 });
 
 describe("convert (integration)", () => {
-  it("registers all 6 MVP snippet types", () => {
+  it("registers all snippet types (6 fragment converters + pageAbsolute)", () => {
     expect(registeredTypes().sort()).toEqual(
-      ["button", "grid", "inputTable", "pageContainer", "singleInput", "title"].sort()
+      ["button", "grid", "inputTable", "pageAbsolute", "pageContainer", "singleInput", "title"].sort()
     );
   });
 
@@ -20,6 +20,18 @@ describe("convert (integration)", () => {
     const res = convert(frame([text("회원관리")]), "title");
     expect(res.xml).toContain('class="tit_main"');
     expect(res.xml).toContain('label="회원관리"');
+    expect(res.warnings).toEqual([]);
+  });
+
+  it("converts a whole frame to a full absolute-positioned page", () => {
+    const root: FigmaNode = {
+      id: "r", type: "FRAME", name: "조회화면", x: 0, y: 0, width: 800, height: 600,
+      children: [{ id: "t", type: "TEXT", name: "제목", characters: "제목", x: 10, y: 20, width: 80, height: 20, children: [] }],
+    };
+    const res = convert(root, "pageAbsolute");
+    expect(res.xml).toContain("<?xml");
+    expect(res.xml).toContain('class="content_body"');
+    expect(res.xml).toContain("position:absolute; left:10px; top:20px;");
     expect(res.warnings).toEqual([]);
   });
 

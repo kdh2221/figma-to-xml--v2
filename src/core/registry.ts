@@ -5,6 +5,7 @@ import { singleInputConverter } from "./converters/singleInput.js";
 import { inputTableConverter } from "./converters/inputTable.js";
 import { gridConverter } from "./converters/grid.js";
 import { pageContainerConverter } from "./converters/pageContainer.js";
+import { pageAbsoluteConverter } from "./converters/pageAbsolute.js";
 
 const registry = new Map<SnippetType, Converter>();
 
@@ -40,3 +41,4 @@ registerConverter(singleInputConverter);
 registerConverter(inputTableConverter);
 registerConverter(gridConverter);
 registerConverter(pageContainerConverter);
+registerConverter(pageAbsoluteConverter);

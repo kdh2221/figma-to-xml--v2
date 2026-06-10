@@ -23,4 +23,13 @@ describe("toFigmaNode", () => {
     expect(out.children).toHaveLength(1);
     expect(out.children[0].characters).toBe("이름");
   });
+
+  it("captures parent-relative x/y when present", () => {
+    const positioned: SceneLike = {
+      id: "3", type: "FRAME", name: "box", x: 12, y: 6, width: 100, height: 40,
+    };
+    const out = toFigmaNode(positioned);
+    expect(out.x).toBe(12);
+    expect(out.y).toBe(6);
+  });
 });

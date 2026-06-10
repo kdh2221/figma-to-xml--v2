@@ -6,6 +6,9 @@ export interface FigmaNode {
   name: string;
   /** TEXT 노드의 텍스트 내용 */
   characters?: string;
+  /** 부모 기준 상대좌표 (절대좌표 풀페이지 변환에서 사용) */
+  x?: number;
+  y?: number;
   width: number;
   height: number;
   /** auto-layout 방향: 'HORIZONTAL' | 'VERTICAL' | 'NONE' */
@@ -21,7 +24,8 @@ export type SnippetType =
   | "inputTable"
   | "grid"
   | "singleInput"
-  | "button";
+  | "button"
+  | "pageAbsolute";
 
 export interface Warning {
   /** 사람이 읽는 경고 메시지 (한국어) */

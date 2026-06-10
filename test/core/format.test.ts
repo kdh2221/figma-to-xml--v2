@@ -26,4 +26,9 @@ describe("prettyXml", () => {
     const compact = '<?xml version="1.0"?><a><b/></a>';
     expect(prettyXml(compact)).toBe('<?xml version="1.0"?>\n<a>\n  <b/>\n</a>');
   });
+
+  it("preserves text content inline with its element", () => {
+    const compact = "<a><b>COMPONENT</b><c/></a>";
+    expect(prettyXml(compact)).toBe("<a>\n  <b>COMPONENT</b>\n  <c/>\n</a>");
+  });
 });
