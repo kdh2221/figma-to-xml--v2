@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:userPalette defaultIcon="i_trigger.png" desc="" />
+		<xf:model>
+			<xf:instance>
+				<data xmlns="" />
+			</xf:instance>
+		</xf:model>
+		<script type="text/javascript"><![CDATA[ ]]></script>
+	</head>
+	<body>
+		<w2:button style="" id="" class="btn_cm">
+			<w2:textbox id="" label="기본버튼" style="" tagname="span"></w2:textbox>
+		</w2:button>
+	</body>
+</html>
