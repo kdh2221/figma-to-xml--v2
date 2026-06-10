@@ -1,11 +1,6 @@
 import type { FigmaNode } from "../../types.js";
 import { el, type XmlEl } from "../../xml.js";
-import { collectTextNodes, textOf } from "../../extract.js";
-
-function firstText(node: FigmaNode): string {
-  const texts = collectTextNodes(node);
-  return texts.length > 0 ? textOf(texts[0]) : "";
-}
+import { firstText } from "./firstText.js";
 
 export function buildButton(node: FigmaNode): XmlEl {
   return el("w2:button", { class: "btn_cm", id: "" }, [

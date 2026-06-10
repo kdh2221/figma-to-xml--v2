@@ -1,14 +1,9 @@
 import type { FigmaNode } from "../../types.js";
 import type { RenderOpts } from "../types.js";
 import { el, cdata, type XmlEl } from "../../xml.js";
-import { collectTextNodes, textOf } from "../../extract.js";
+import { firstText } from "./firstText.js";
 
 export type TitleVariant = "main" | "sub";
-
-function firstText(node: FigmaNode): string {
-  const texts = collectTextNodes(node);
-  return texts.length > 0 ? textOf(texts[0]) : "";
-}
 
 /** 단일 체크박스 (11_03 체크박스). 라벨 1개를 가진 checkboxgroup. */
 function buildCheckbox(label: string): XmlEl {

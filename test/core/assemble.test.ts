@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderRegion, assemblePage } from "../../src/core/assemble.js";
+import { renderRegion, renderSnippet, assemblePage } from "../../src/core/assemble.js";
 import { serialize } from "../../src/core/xml.js";
 import type { FigmaNode } from "../../src/core/types.js";
 
@@ -30,6 +30,10 @@ describe("renderRegion", () => {
     expect(serialize(renderRegion("button", frame("b", [text("저장")])))).toBe(
       '<w2:button class="btn_cm" id="" meta_snippetCategory="08_기본버튼" meta_snippetName="8_02 기본버튼" meta_snippetKeyComponent="true"><w2:textbox id="" label="저장" tagname="span"/></w2:button>'
     );
+  });
+
+  it("unknown snippet id falls back to an empty group (never throws)", () => {
+    expect(serialize(renderSnippet("nope", frame("x", [])))).toBe('<xf:group class="" id=""/>');
   });
 });
 
@@ -87,5 +91,12 @@ describe("assemblePage", () => {
     const r3 = frame("Screen3", [frame("c1", [text("제목")], 400, 40)], 400, 100);
     const xml = assemblePage(r3, { c1: "title" });
     expect(xml).toContain('class="tit_main"');
+  });
+
+  it("renders a static raw() snippet through dispatch, carrying its catalog meta", () => {
+    const r4 = frame("Screen4", [frame("c1", [], 400, 300)], 400, 320);
+    const xml = assemblePage(r4, { c1: "tree" });
+    expect(xml).toContain("<w2:treeview");
+    expect(xml).toContain('meta_snippetName="7_01 트리"');
   });
 });
