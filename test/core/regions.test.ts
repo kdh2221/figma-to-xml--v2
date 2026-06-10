@@ -25,6 +25,11 @@ describe("classifyRegion", () => {
     const bar = frame("Frame 123", [text("검색조건"), text("전체")], 1553, 40);
     expect(classifyRegion(bar)).toEqual({ type: "title", confidence: "medium" });
   });
+
+  it("detects a label+required(*)+value row as inputTable", () => {
+    const fieldRow = frame("Frame 466", [text("플랜명"), text("*"), text("SignSquare")]);
+    expect(classifyRegion(fieldRow)).toEqual({ type: "inputTable", confidence: "medium" });
+  });
 });
 
 describe("analyzeRegions", () => {

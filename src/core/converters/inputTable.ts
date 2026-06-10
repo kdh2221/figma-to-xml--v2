@@ -38,6 +38,24 @@ export function buildInputTable(slots: InputTableSlots): XmlEl {
   ]);
 }
 
+/** 행 기반 폼 테이블 빌드: 프레임 1개 = 1행. th=라벨, td=빈 입력칸(xf:input).
+ *  연속된 입출력테이블 영역을 하나로 합칠 때 사용 (각 영역이 한 행). */
+export function buildFormTable(labels: string[]): XmlEl {
+  const colgroup = el("xf:group", { tagname: "colgroup" }, [
+    el("xf:group", { style: "width:100px;", tagname: "col" }),
+    el("xf:group", { tagname: "col" }),
+  ]);
+  const rows = labels.map((label) =>
+    el("xf:group", { tagname: "tr" }, [
+      el("xf:group", { class: "w2tb_th", tagname: "th" }, [el("w2:textbox", { label })]),
+      el("xf:group", { class: "w2tb_td", tagname: "td" }, [el("xf:input", { class: "", id: "" })]),
+    ])
+  );
+  return el("xf:group", { class: "tblbox", id: "", style: "" }, [
+    el("xf:group", { class: "w2tb tbl", tagname: "table" }, [colgroup, ...rows]),
+  ]);
+}
+
 export const inputTableConverter: Converter<InputTableSlots> = {
   type: "inputTable",
   extract(node: FigmaNode) {

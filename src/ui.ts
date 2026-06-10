@@ -34,15 +34,18 @@ $("generate").onclick = () => {
   post({ type: "generate", typeById });
 };
 
-$("convert").onclick = () =>
-  post({
-    type: "convert",
-    snippetType: ($("type") as HTMLSelectElement).value,
-    kind: ($("kind") as HTMLSelectElement).value,
-    cols: Number(($("cols") as HTMLSelectElement).value),
-  });
+// 소스는 보통 웹스퀘어에서 열어 보므로 기본 숨김 — '소스 보기'로 토글한다.
+function setSourceVisible(visible: boolean): void {
+  $("xml").style.display = visible ? "block" : "none";
+  ($("toggleSource") as HTMLButtonElement).textContent = visible ? "소스 숨기기" : "소스 보기";
+}
+$("toggleSource").onclick = () => setSourceVisible($("xml").style.display === "none");
 
-$("dump").onclick = () => post({ type: "dump" });
+// JSON 추출: 선택 프레임을 JSON으로 덤프하고 결과를 바로 보여준다(원클릭).
+$("dump").onclick = () => {
+  post({ type: "dump" });
+  setSourceVisible(true);
+};
 
 $("copy").onclick = () => {
   (navigator as any).clipboard?.writeText(($("xml") as HTMLTextAreaElement).value);

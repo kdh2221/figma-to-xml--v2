@@ -1,5 +1,4 @@
-import type { FigmaNode, SnippetType } from "./core/types.js";
-import { convert } from "./core/registry.js";
+import type { FigmaNode } from "./core/types.js";
 import { collectTextNodes, textOf } from "./core/extract.js";
 import { prettyXml } from "./core/format.js";
 import { analyzeRegions, type RegionType } from "./core/regions.js";
@@ -73,10 +72,7 @@ if (typeof figma !== "undefined") {
   postSelection();
 
   figma.ui.onmessage = (
-    msg: {
-      type: string; snippetType?: SnippetType; kind?: string; cols?: number;
-      typeById?: Record<string, RegionType>;
-    }
+    msg: { type: string; typeById?: Record<string, RegionType> }
   ) => {
     // 자기완결 인식 흐름: 선택 프레임을 영역으로 분석해 추측 타입과 함께 UI로
     if (msg.type === "analyze") {
@@ -94,16 +90,7 @@ if (typeof figma !== "undefined") {
       figma.ui.postMessage({ type: "result", xml: prettyXml(xml), warnings: [] });
       return;
     }
-    if (msg.type === "convert" && msg.snippetType) {
-      const scene = selectedOne();
-      if (!scene) return;
-      const overrides: Record<string, unknown> = {};
-      if (msg.kind !== undefined) overrides.kind = msg.kind;
-      if (msg.cols !== undefined) overrides.cols = msg.cols;
-      const result = convert(toFigmaNode(scene), msg.snippetType, overrides);
-      figma.ui.postMessage({ type: "result", xml: prettyXml(result.xml), warnings: result.warnings });
-    }
-    // 픽스처 수집: 현재 선택을 축약 노드 JSON으로 덤프 (테스트 픽스처 박제용)
+    // JSON 추출: 현재 선택을 축약 노드 JSON으로 덤프 (수정본 분석/픽스처 박제용)
     if (msg.type === "dump") {
       const scene = selectedOne();
       if (!scene) return;

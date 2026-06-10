@@ -22,8 +22,6 @@
   .badge.high { background: #e3f6e8; color: #0a7; }
   .badge.medium { background: #fff4e0; color: #b97000; }
   .badge.low { background: #fde8e8; color: #b30000; }
-  details { margin-top: 14px; color: #666; }
-  details summary { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -40,38 +38,14 @@
     <button id="generate" class="primary">페이지 생성</button>
   </div>
 
-  <textarea id="xml" readonly placeholder="영역 분석 → 페이지 생성 시 결과 XML이 여기에"></textarea>
-  <div class="row" style="margin-top:6px;">
+  <div class="row" style="margin-top:8px;">
     <button id="save">XML 파일로 저장</button>
     <button id="copy">복사</button>
+    <button id="toggleSource">소스 보기</button>
+    <button id="dump" title="선택 프레임을 JSON으로 추출">JSON 추출</button>
   </div>
+  <textarea id="xml" readonly style="display:none;" placeholder="영역 분석 → 페이지 생성 시 결과 XML이 여기에"></textarea>
   <div id="warnings"></div>
-
-  <details>
-    <summary>고급: 단일 스니펫/풀페이지 변환</summary>
-    <div class="row" style="margin-top:6px;">
-      <select id="type">
-        <option value="pageAbsolute">풀페이지(절대좌표)</option>
-        <option value="title">타이틀</option>
-        <option value="inputTable">입출력테이블</option>
-        <option value="grid">그리드</option>
-        <option value="singleInput">단일입력폼</option>
-        <option value="button">버튼</option>
-        <option value="pageContainer">화면시작</option>
-      </select>
-      <select id="kind">
-        <option value="input">인풋</option>
-        <option value="select">셀렉트</option>
-        <option value="textbox">텍스트</option>
-        <option value="textarea">텍스트에어리어</option>
-      </select>
-      <select id="cols">
-        <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option>
-      </select>
-      <button id="convert">단일 변환</button>
-      <button id="dump" title="선택 노드 JSON 덤프">JSON</button>
-    </div>
-  </details>
   <!--UI_SCRIPT-->
 </body>
 </html>

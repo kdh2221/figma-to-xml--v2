@@ -25,6 +25,12 @@ const KIND_TO_REGION: Record<Kind, RegionType> = {
   tab: "tab", group: "group",
 };
 
+/** 폼 필드 행인가: 필수입력 표시(*)를 품은 라벨+값 한 줄 → 입출력테이블 행으로 본다.
+ *  연속된 이런 행들은 조립 단계에서 하나의 입출력테이블로 합쳐진다. */
+function isInputRow(node: FigmaNode): boolean {
+  return collectTextNodes(node).map(textOf).some((s) => s.trim() === "*");
+}
+
 /** 직계 자식 중 크기가 같은 것이 3개 이상이면 반복 구조(그리드/카드) */
 function hasRepeatedChildren(node: FigmaNode): boolean {
   const buckets = new Map<string, number>();
@@ -41,6 +47,8 @@ export function classifyRegion(node: FigmaNode): { type: RegionType; confidence:
   const kind = classify(node.name);
   if (kind) return { type: KIND_TO_REGION[kind], confidence: "high" };
 
+  // 필수표시(*)는 폼 필드의 강한 신호 → 같은 크기 텍스트가 반복돼도 그리드보다 우선
+  if (isInputRow(node)) return { type: "inputTable", confidence: "medium" };
   if (hasRepeatedChildren(node)) return { type: "grid", confidence: "medium" };
 
   const texts = collectTextNodes(node);
