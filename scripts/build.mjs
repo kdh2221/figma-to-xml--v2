@@ -8,7 +8,7 @@ await build({
   entryPoints: ["src/main.ts"],
   bundle: true,
   format: "iife",
-  target: "es2019",
+  target: "es2017",
   outfile: "dist/main.js",
 });
 
@@ -17,7 +17,7 @@ await build({
   entryPoints: ["src/ui.ts"],
   bundle: true,
   format: "iife",
-  target: "es2019",
+  target: "es2017",
   outfile: "dist/ui.js",
 });
 
