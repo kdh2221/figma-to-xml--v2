@@ -25,6 +25,11 @@ export function cdata(text: string): XmlEl {
   return { tag: "#cdata", attrs: {}, children: [text] };
 }
 
+/** 원본 XML 문자열을 이스케이프 없이 그대로 방출하는 노드. 카탈로그 리터럴 보존용. */
+export function raw(xml: string): XmlEl {
+  return { tag: "#raw", attrs: {}, children: [xml] };
+}
+
 export function escapeAttr(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -34,6 +39,9 @@ export function escapeAttr(value: string): string {
 }
 
 export function serialize(node: XmlEl): string {
+  if (node.tag === "#raw") {
+    return node.children.map((c) => (typeof c === "string" ? c : "")).join("");
+  }
   if (node.tag === "#cdata") {
     const text = node.children.map((c) => (typeof c === "string" ? c : "")).join("");
     return `<![CDATA[${text}]]>`;
