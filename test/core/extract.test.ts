@@ -19,4 +19,10 @@ describe("extract", () => {
     const root = frame([text("A"), frame([text("B")])]);
     expect(directTextChildren(root).map((n) => n.characters)).toEqual(["A"]);
   });
+
+  it("collectTextNodes includes the root node itself when it is TEXT", () => {
+    // 사용자가 텍스트 레이어를 직접 선택한 경우 — 루트 자신도 수집돼야 한다
+    const root = text("직접선택");
+    expect(collectTextNodes(root).map((n) => n.characters)).toEqual(["직접선택"]);
+  });
 });

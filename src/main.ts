@@ -1,5 +1,6 @@
 import type { FigmaNode, SnippetType } from "./core/types.js";
 import { convert } from "./core/registry.js";
+import { collectTextNodes, textOf } from "./core/extract.js";
 
 /** figma SceneNode의 덕타입(테스트용). 실제로는 figma SceneNode가 들어온다. */
 export interface SceneLike {
@@ -49,6 +50,20 @@ if (typeof figma !== "undefined") {
     }
     return sel[0] as SceneLike;
   };
+
+  // 선택이 바뀔 때마다 어떤 레이어가 읽혔고 어떤 텍스트가 추출되는지 UI에 보여준다.
+  const postSelection = (): void => {
+    const sel = figma.currentPage.selection;
+    if (sel.length !== 1) {
+      figma.ui.postMessage({ type: "selection", name: null, count: sel.length, texts: [] });
+      return;
+    }
+    const node = toFigmaNode(sel[0] as SceneLike);
+    const texts = collectTextNodes(node).map(textOf).filter((s) => s !== "");
+    figma.ui.postMessage({ type: "selection", name: node.name, count: 1, texts });
+  };
+  figma.on("selectionchange", postSelection);
+  postSelection();
 
   figma.ui.onmessage = (msg: { type: string; snippetType?: SnippetType; kind?: string; cols?: number }) => {
     if (msg.type === "convert" && msg.snippetType) {

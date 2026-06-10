@@ -9,20 +9,23 @@
   #xml { width: 100%; height: 280px; box-sizing: border-box; font-family: monospace;
          white-space: pre; overflow: auto; margin-top: 8px; }
   #warnings { color: #b30000; margin-top: 8px; white-space: pre-wrap; }
+  #selection { margin-bottom: 8px; padding: 6px 8px; background: #f4f4f4;
+               border-radius: 4px; font-size: 11px; }
   .row { display: flex; gap: 8px; align-items: flex-end; }
 </style>
 </head>
 <body>
+  <div id="selection">선택 없음 — 레이어를 하나 선택하세요</div>
   <div class="row">
     <div>
       <label for="type">스니펫 타입</label>
       <select id="type">
-        <option value="pageContainer">화면시작</option>
         <option value="title">타이틀</option>
         <option value="inputTable">입출력테이블</option>
         <option value="grid">그리드</option>
         <option value="singleInput">단일입력폼</option>
         <option value="button">버튼</option>
+        <option value="pageContainer">화면시작(빈 컨테이너)</option>
       </select>
     </div>
     <div>
