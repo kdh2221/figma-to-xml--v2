@@ -1,24 +1,35 @@
 const $ = (id: string) => document.getElementById(id) as HTMLElement;
 
+interface CatalogCategory {
+  category: string;
+  categoryLabel: string;
+  variants: { id: string; label: string }[];
+}
+
 interface Region {
   id: string;
   name: string;
-  type: string;
+  snippetId: string;
   confidence: "high" | "medium" | "low";
   texts: string[];
 }
 
-const REGION_TYPES: { value: string; label: string }[] = [
-  { value: "title", label: "타이틀" },
-  { value: "inputTable", label: "입출력테이블" },
-  { value: "grid", label: "그리드" },
-  { value: "button", label: "버튼" },
-  { value: "input", label: "인풋" },
-  { value: "select", label: "셀렉트" },
-  { value: "text", label: "텍스트" },
-  { value: "tab", label: "탭" },
-  { value: "group", label: "그룹" },
-];
+let CATALOG: CatalogCategory[] = [];
+
+function categoryOf(snippetId: string): CatalogCategory | undefined {
+  return CATALOG.find((c) => c.variants.some((v) => v.id === snippetId));
+}
+
+function fillVariants(variantSel: HTMLSelectElement, cat: CatalogCategory, selectedId?: string): void {
+  variantSel.innerHTML = "";
+  for (const v of cat.variants) {
+    const o = document.createElement("option");
+    o.value = v.id;
+    o.textContent = v.label;
+    if (v.id === selectedId) o.selected = true;
+    variantSel.appendChild(o);
+  }
+}
 
 function post(message: Record<string, unknown>): void {
   parent.postMessage({ pluginMessage: message }, "*");
@@ -27,11 +38,11 @@ function post(message: Record<string, unknown>): void {
 $("analyze").onclick = () => post({ type: "analyze" });
 
 $("generate").onclick = () => {
-  const typeById: Record<string, string> = {};
-  $("regions").querySelectorAll<HTMLSelectElement>("select[data-region]").forEach((sel) => {
-    typeById[sel.dataset.region as string] = sel.value;
+  const snippetById: Record<string, string> = {};
+  $("regions").querySelectorAll<HTMLSelectElement>("select[data-variant]").forEach((sel) => {
+    snippetById[sel.dataset.variant as string] = sel.value;
   });
-  post({ type: "generate", typeById });
+  post({ type: "generate", snippetById });
 };
 
 // 소스는 보통 웹스퀘어에서 열어 보므로 기본 숨김 — '소스 보기'로 토글한다.
@@ -89,19 +100,31 @@ function renderRegions(regions: Region[]): void {
     badge.className = "badge " + r.confidence;
     badge.textContent = r.confidence === "high" ? "확실" : r.confidence === "medium" ? "추측" : "불명";
 
-    const sel = document.createElement("select");
-    sel.dataset.region = r.id;
-    for (const opt of REGION_TYPES) {
+    const initCat = categoryOf(r.snippetId) ?? CATALOG[0];
+
+    const catSel = document.createElement("select");
+    catSel.dataset.cat = r.id;
+    for (const c of CATALOG) {
       const o = document.createElement("option");
-      o.value = opt.value;
-      o.textContent = opt.label;
-      if (opt.value === r.type) o.selected = true;
-      sel.appendChild(o);
+      o.value = c.category;
+      o.textContent = c.categoryLabel;
+      if (initCat && c.category === initCat.category) o.selected = true;
+      catSel.appendChild(o);
     }
+
+    const varSel = document.createElement("select");
+    varSel.dataset.variant = r.id;
+    if (initCat) fillVariants(varSel, initCat, r.snippetId);
+
+    catSel.onchange = () => {
+      const cat = CATALOG.find((c) => c.category === catSel.value);
+      if (cat) fillVariants(varSel, cat);
+    };
 
     row.appendChild(info);
     row.appendChild(badge);
-    row.appendChild(sel);
+    row.appendChild(catSel);
+    row.appendChild(varSel);
     host.appendChild(row);
   }
 }
@@ -124,6 +147,7 @@ onmessage = (event: MessageEvent) => {
   }
 
   if (msg.type === "regions") {
+    CATALOG = (msg.catalog ?? []) as CatalogCategory[];
     renderRegions(msg.regions as Region[]);
     return;
   }
