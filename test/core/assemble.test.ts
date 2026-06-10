@@ -26,9 +26,9 @@ describe("renderRegion", () => {
     expect(xml).toContain('value="번호"');
   });
 
-  it("button -> btn_cm with label", () => {
+  it("button -> btn_cm with label and snippet meta", () => {
     expect(serialize(renderRegion("button", frame("b", [text("저장")])))).toBe(
-      '<w2:button class="btn_cm" id=""><w2:textbox id="" label="저장" tagname="span"/></w2:button>'
+      '<w2:button class="btn_cm" id="" meta_snippetCategory="08_기본버튼" meta_snippetName="8_02 기본버튼" meta_snippetKeyComponent="true"><w2:textbox id="" label="저장" tagname="span"/></w2:button>'
     );
   });
 });
@@ -75,5 +75,17 @@ describe("assemblePage", () => {
     expect(doc).toContain("<xf:input");
     // 필수표시 '*'는 라벨로 새지 않는다
     expect(doc).not.toContain('label="*"');
+  });
+
+  it("accepts snippetId overrides directly", () => {
+    const r2 = frame("Screen2", [frame("c1", [text("이메일")], 400, 40)], 400, 100);
+    const xml = assemblePage(r2, { c1: "email" });
+    expect(xml).toContain('label="@"');
+  });
+
+  it("still accepts legacy RegionType strings", () => {
+    const r3 = frame("Screen3", [frame("c1", [text("제목")], 400, 40)], 400, 100);
+    const xml = assemblePage(r3, { c1: "title" });
+    expect(xml).toContain('class="tit_main"');
   });
 });
