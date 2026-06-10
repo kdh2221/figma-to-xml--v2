@@ -29,7 +29,7 @@ describe("inputTable converter", () => {
     );
   });
 
-  it("warns when label count is not a multiple of cols", () => {
+  it("pads the last row when label count is not a multiple of cols", () => {
     const { slots } = inputTableConverter.extract(table(["A", "B", "C"]));
     const result = inputTableConverter.render({ ...slots, cols: 2 });
     // 3 labels / 2 cols => 2 rows (2 + padded 1).

@@ -50,11 +50,14 @@ if (typeof figma !== "undefined") {
     return sel[0] as SceneLike;
   };
 
-  figma.ui.onmessage = (msg: { type: string; snippetType?: SnippetType }) => {
+  figma.ui.onmessage = (msg: { type: string; snippetType?: SnippetType; kind?: string; cols?: number }) => {
     if (msg.type === "convert" && msg.snippetType) {
       const scene = selectedOne();
       if (!scene) return;
-      const result = convert(toFigmaNode(scene), msg.snippetType);
+      const overrides: Record<string, unknown> = {};
+      if (msg.kind !== undefined) overrides.kind = msg.kind;
+      if (msg.cols !== undefined) overrides.cols = msg.cols;
+      const result = convert(toFigmaNode(scene), msg.snippetType, overrides);
       figma.ui.postMessage({ type: "result", xml: result.xml, warnings: result.warnings });
     }
     // 픽스처 수집: 현재 선택을 축약 노드 JSON으로 덤프 (테스트 픽스처 박제용)

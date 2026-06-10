@@ -2,7 +2,9 @@ const $ = (id: string) => document.getElementById(id) as HTMLElement;
 
 $("convert").onclick = () => {
   const snippetType = ($("type") as HTMLSelectElement).value;
-  parent.postMessage({ pluginMessage: { type: "convert", snippetType } }, "*");
+  const kind = ($("kind") as HTMLSelectElement).value;
+  const cols = Number(($("cols") as HTMLSelectElement).value);
+  parent.postMessage({ pluginMessage: { type: "convert", snippetType, kind, cols } }, "*");
 };
 
 $("copy").onclick = () => {
