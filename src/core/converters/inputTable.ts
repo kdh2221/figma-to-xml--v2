@@ -56,6 +56,46 @@ export function buildFormTable(labels: string[]): XmlEl {
   ]);
 }
 
+/** 5_06 테이블(목록형): 라벨열 없는 N컬럼. 헤더행(th) + 빈 데이터행(td). */
+export function buildListTable(headers: string[]): XmlEl {
+  const cols = Math.max(1, headers.length);
+  const colgroup = el("xf:group", { tagname: "colgroup" },
+    Array.from({ length: cols }, () => el("xf:group", { tagname: "col" })));
+  const headerRow = el("xf:group", { tagname: "tr" },
+    Array.from({ length: cols }, (_, i) =>
+      el("xf:group", { class: "w2tb_th tac", tagname: "th" }, [
+        el("w2:textbox", { label: headers[i] ?? "" }),
+      ])));
+  const dataRow = el("xf:group", { tagname: "tr" },
+    Array.from({ length: cols }, () => el("xf:group", { class: "w2tb_td", tagname: "td" })));
+  return el("xf:group", { class: "tblbox", id: "", style: "" }, [
+    el("xf:group", { class: "w2tb tbl", tagname: "table" }, [colgroup, headerRow, dataRow]),
+  ]);
+}
+
+/** 5_07 테이블(멀티형): 행헤더열(100px) + 컬럼헤더행 + 데이터행(선두 행헤더 th). */
+export function buildMultiTable(headers: string[]): XmlEl {
+  const cols = Math.max(1, headers.length);
+  const colgroup = el("xf:group", { tagname: "colgroup" }, [
+    el("xf:group", { style: "width:100px;", tagname: "col" }),
+    ...Array.from({ length: cols }, () => el("xf:group", { tagname: "col" })),
+  ]);
+  const headerRow = el("xf:group", { tagname: "tr" }, [
+    el("xf:group", { class: "w2tb_th req", tagname: "th" }),
+    ...Array.from({ length: cols }, (_, i) =>
+      el("xf:group", { class: "w2tb_th tac", tagname: "th" }, [
+        el("w2:textbox", { label: headers[i] ?? "" }),
+      ])),
+  ]);
+  const dataRow = el("xf:group", { tagname: "tr" }, [
+    el("xf:group", { class: "w2tb_th req", tagname: "th" }, [el("w2:textbox", { label: "" })]),
+    ...Array.from({ length: cols }, () => el("xf:group", { class: "w2tb_td", tagname: "td" })),
+  ]);
+  return el("xf:group", { class: "tblbox", id: "", style: "" }, [
+    el("xf:group", { class: "w2tb tbl", tagname: "table" }, [colgroup, headerRow, dataRow]),
+  ]);
+}
+
 export const inputTableConverter: Converter<InputTableSlots> = {
   type: "inputTable",
   extract(node: FigmaNode) {
