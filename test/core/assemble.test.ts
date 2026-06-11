@@ -99,6 +99,30 @@ describe("assemblePage", () => {
     expect(xml).toContain("<w2:treeview");
     expect(xml).toContain('meta_snippetName="7_01 트리"');
   });
+
+  it("wraps grid page with full scaffold (MSA, onpageload, dataList1)", () => {
+    const doc = assemblePage(root);
+    expect(doc).toContain('meta_vertical_guides=""');
+    expect(doc).toContain('meta_horizontal_guides=""');
+    expect(doc).toContain("<w2:MSA/>");
+    expect(doc).toContain('<body ev:onpageload="scwin.onpageload" class="">');
+    expect(doc).toContain("scwin.onpageload = function(){};");
+    expect(doc).toContain('id="dataList1"');
+    expect(doc).toContain('<w2:column id="col15" name="name15" dataType="text"/>');
+    expect(doc).not.toContain("<xf:instance>");
+  });
+
+  it("wraps non-grid page with empty-instance model but same head/body shell", () => {
+    const form = frame("FormOnly", [
+      frame("r1", [text("플랜명"), text("SignSquare")]),
+    ], 600, 100);
+    const doc = assemblePage(form, { r1: "inputTable" });
+    expect(doc).toContain("<w2:MSA/>");
+    expect(doc).toContain('<body ev:onpageload="scwin.onpageload" class="">');
+    expect(doc).toContain("scwin.onpageload = function(){};");
+    expect(doc).toContain('<xf:instance><data xmlns=""/></xf:instance>');
+    expect(doc).not.toContain("w2:dataCollection");
+  });
 });
 
 describe("buildModelXml", () => {
