@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderRegion, renderSnippet, assemblePage } from "../../src/core/assemble.js";
+import { renderRegion, renderSnippet, assemblePage, buildModelXml } from "../../src/core/assemble.js";
 import { serialize } from "../../src/core/xml.js";
 import type { FigmaNode } from "../../src/core/types.js";
 
@@ -98,5 +98,47 @@ describe("assemblePage", () => {
     const xml = assemblePage(r4, { c1: "tree" });
     expect(xml).toContain("<w2:treeview");
     expect(xml).toContain('meta_snippetName="7_01 트리"');
+  });
+
+  it("wraps grid page with full scaffold (MSA, onpageload, dataList1)", () => {
+    const doc = assemblePage(root);
+    expect(doc).toContain('meta_vertical_guides=""');
+    expect(doc).toContain('meta_horizontal_guides=""');
+    expect(doc).toContain("<w2:MSA/>");
+    expect(doc).toContain('<body ev:onpageload="scwin.onpageload" class="">');
+    expect(doc).toContain("scwin.onpageload = function(){};");
+    expect(doc).toContain('id="dataList1"');
+    expect(doc).toContain('<w2:column id="col15" name="name15" dataType="text"/>');
+    expect(doc).not.toContain("<xf:instance>");
+  });
+
+  it("wraps non-grid page with empty-instance model but same head/body shell", () => {
+    const form = frame("FormOnly", [
+      frame("r1", [text("플랜명"), text("SignSquare")]),
+    ], 600, 100);
+    const doc = assemblePage(form, { r1: "inputTable" });
+    expect(doc).toContain("<w2:MSA/>");
+    expect(doc).toContain('<body ev:onpageload="scwin.onpageload" class="">');
+    expect(doc).toContain("scwin.onpageload = function(){};");
+    expect(doc).toContain('<xf:instance><data xmlns=""/></xf:instance>');
+    expect(doc).not.toContain("w2:dataCollection");
+  });
+});
+
+describe("buildModelXml", () => {
+  it("grid page emits dataCollection/dataList1 with col1..col15", () => {
+    const xml = buildModelXml(true);
+    expect(xml).toContain('<w2:dataCollection baseNode="map">');
+    expect(xml).toContain('id="dataList1"');
+    expect(xml).toContain('<w2:column id="col1" name="name1" dataType="text"/>');
+    expect(xml).toContain('<w2:column id="col15" name="name15" dataType="text"/>');
+    expect(xml).not.toContain('col16');
+    expect((xml.match(/<w2:column /g) ?? []).length).toBe(15);
+    expect((xml.match(/<w2:row\/>/g) ?? []).length).toBe(5);
+    expect(xml).not.toContain("<xf:instance>");
+  });
+  it("non-grid page emits the empty instance model", () => {
+    const xml = buildModelXml(false);
+    expect(xml).toBe('<xf:model><xf:instance><data xmlns=""/></xf:instance></xf:model>');
   });
 });

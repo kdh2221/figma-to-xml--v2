@@ -45,18 +45,47 @@ export function renderRegion(type: string, node: FigmaNode, opts: RenderOpts = {
   return renderSnippet(type, node, opts);
 }
 
-/** 문서 외피로 감싼다 (body 루트 = 전달된 inner XML) */
-function wrapDocument(screenName: string, bodyInner: string): string {
+/** 그리드 바인딩용 dataList1 컬럼 수(템플릿 동일). */
+const DATALIST_COLS = 15;
+/** dataList1 빈 데이터행 수. */
+const DATALIST_ROWS = 5;
+/** body ev:onpageload 핸들러를 안전하게 만드는 스크립트 스텁. */
+const ONPAGELOAD_STUB = "scwin.onpageload = function(){};";
+
+/** xf:model XML. 그리드가 있으면 dataCollection/dataList1 스캐폴드, 아니면 빈 instance. */
+export function buildModelXml(hasGrid: boolean): string {
+  if (!hasGrid) {
+    return '<xf:model><xf:instance><data xmlns=""/></xf:instance></xf:model>';
+  }
+  let cols = "";
+  for (let i = 1; i <= DATALIST_COLS; i++) {
+    cols += `<w2:column id="col${i}" name="name${i}" dataType="text"/>`;
+  }
+  const rows = "<w2:row/>".repeat(DATALIST_ROWS);
+  return (
+    "<xf:model>" +
+    '<w2:dataCollection baseNode="map">' +
+    '<w2:dataList baseNode="list" repeatNode="map" id="dataList1" saveRemovedData="true">' +
+    `<w2:columnInfo>${cols}</w2:columnInfo>` +
+    `<w2:data use="true">${rows}</w2:data>` +
+    "</w2:dataList>" +
+    "</w2:dataCollection>" +
+    "</xf:model>"
+  );
+}
+
+/** 문서 외피로 감싼다 (body 루트 = 전달된 inner XML). hasGrid면 모델에 dataList1 스캐폴드. */
+function wrapDocument(screenName: string, bodyInner: string, hasGrid: boolean): string {
   return (
     '<?xml version="1.0" encoding="UTF-8"?>' +
     '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" ' +
     'xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">' +
-    `<head meta_screenName="${escapeAttr(screenName)}">` +
-    "<w2:type>COMPONENT</w2:type><w2:buildDate/>" +
-    '<xf:model><xf:instance><data xmlns=""/></xf:instance></xf:model>' +
-    '<script type="text/javascript"><![CDATA[]]></script>' +
+    `<head meta_vertical_guides="" meta_horizontal_guides="" meta_screenName="${escapeAttr(screenName)}">` +
+    "<w2:type>COMPONENT</w2:type><w2:buildDate/><w2:MSA/>" +
+    buildModelXml(hasGrid) +
+    `<script type="text/javascript"><![CDATA[${ONPAGELOAD_STUB}]]></script>` +
     "</head>" +
-    `<body>${bodyInner}</body>` +
+    `<body ev:onpageload="scwin.onpageload" class="">${bodyInner}</body>` +
     "</html>"
   );
 }
@@ -99,6 +128,9 @@ export function assemblePage(root: FigmaNode, idById: Record<string, string> = {
     i++;
   }
 
+  // 최상위 영역만 본다(영역=스니핏 1개 모델). split 등에 그리드가 중첩되는 구조는
+  // assemblePage가 렌더하지 않으므로 현재 구조상 이 스캔으로 충분하다.
+  const hasGrid = children.some((_, i) => getSnippet(idOf(i))?.category === "06_그리드");
   const sub = el("xf:group", { class: "sub_contents", id: "", meta_componentContainer: "true" }, regionEls);
-  return wrapDocument(root.name, serialize(sub));
+  return wrapDocument(root.name, serialize(sub), hasGrid);
 }
