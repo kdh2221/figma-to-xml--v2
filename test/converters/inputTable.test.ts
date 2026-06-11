@@ -61,4 +61,10 @@ describe("buildMultiTable (멀티형)", () => {
     expect(xml.match(/class="w2tb_th tac"/g)?.length).toBe(2); // 컬럼헤더 2
     expect(xml.match(/class="w2tb_td"/g)?.length).toBe(2);     // 데이터 셀 2
   });
+  it("falls back to 1 data column when no headers", () => {
+    const xml = serialize(buildMultiTable([]));
+    expect(xml).toContain('style="width:100px;"');            // 행헤더 col 유지
+    expect(xml.match(/class="w2tb_th tac"/g)?.length).toBe(1); // 컬럼헤더 1
+    expect(xml.match(/class="w2tb_td"/g)?.length).toBe(1);     // 데이터 셀 1
+  });
 });

@@ -11,6 +11,9 @@ export function buildTableForNode(node: FigmaNode, cols: number): XmlEl {
   return buildInputTable({ labels, cols });
 }
 
+// 목록형/멀티형은 항상 헤더 기반 테이블이므로 buildTableForNode 와 달리
+// hasFormControls 스마트폼 분기를 의도적으로 거치지 않는다.
+
 /** 5_06 목록형: 노드 텍스트를 컬럼 헤더로 사용. */
 export function buildListTableForNode(node: FigmaNode): XmlEl {
   const headers = collectTextNodes(node).map(textOf).filter((s) => s !== "");
