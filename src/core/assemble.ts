@@ -128,6 +128,8 @@ export function assemblePage(root: FigmaNode, idById: Record<string, string> = {
     i++;
   }
 
+  // 최상위 영역만 본다(영역=스니핏 1개 모델). split 등에 그리드가 중첩되는 구조는
+  // assemblePage가 렌더하지 않으므로 현재 구조상 이 스캔으로 충분하다.
   const hasGrid = children.some((_, i) => getSnippet(idOf(i))?.category === "06_그리드");
   const sub = el("xf:group", { class: "sub_contents", id: "", meta_componentContainer: "true" }, regionEls);
   return wrapDocument(root.name, serialize(sub), hasGrid);
