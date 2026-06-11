@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { serialize } from "../../../src/core/xml.js";
-import { buildTableForNode } from "../../../src/core/snippets/builders/table.js";
+import { buildTableForNode, buildListTableForNode, buildMultiTableForNode } from "../../../src/core/snippets/builders/table.js";
 import type { FigmaNode } from "../../../src/core/types.js";
 
 const frame = (texts: string[]): FigmaNode => ({
@@ -18,5 +18,18 @@ describe("buildTableForNode", () => {
   it("cols=1 with 3 labels => 3 rows", () => {
     const xml = serialize(buildTableForNode(frame(["A", "B", "C"]), 1));
     expect(xml.match(/tagname="tr"/g)?.length).toBe(3);
+  });
+});
+
+describe("list/multi table from node", () => {
+  it("list table uses node text as column headers", () => {
+    const xml = serialize(buildListTableForNode(frame(["A", "B"])));
+    expect(xml.match(/class="w2tb_th tac"/g)?.length).toBe(2);
+    expect(xml).toContain('label="A"');
+  });
+  it("multi table has a row-header column", () => {
+    const xml = serialize(buildMultiTableForNode(frame(["A", "B"])));
+    expect(xml).toContain('style="width:100px;"');
+    expect(xml.match(/class="w2tb_th tac"/g)?.length).toBe(2);
   });
 });
