@@ -45,6 +45,33 @@ export function renderRegion(type: string, node: FigmaNode, opts: RenderOpts = {
   return renderSnippet(type, node, opts);
 }
 
+/** 그리드 바인딩용 dataList1 컬럼 수(템플릿 동일). */
+const DATALIST_COLS = 15;
+/** dataList1 빈 데이터행 수. */
+const DATALIST_ROWS = 5;
+
+/** xf:model XML. 그리드가 있으면 dataCollection/dataList1 스캐폴드, 아니면 빈 instance. */
+export function buildModelXml(hasGrid: boolean): string {
+  if (!hasGrid) {
+    return '<xf:model><xf:instance><data xmlns=""/></xf:instance></xf:model>';
+  }
+  let cols = "";
+  for (let i = 1; i <= DATALIST_COLS; i++) {
+    cols += `<w2:column id="col${i}" name="name${i}" dataType="text"/>`;
+  }
+  const rows = "<w2:row/>".repeat(DATALIST_ROWS);
+  return (
+    "<xf:model>" +
+    '<w2:dataCollection baseNode="map">' +
+    '<w2:dataList baseNode="list" repeatNode="map" id="dataList1" saveRemovedData="true">' +
+    `<w2:columnInfo>${cols}</w2:columnInfo>` +
+    `<w2:data use="true">${rows}</w2:data>` +
+    "</w2:dataList>" +
+    "</w2:dataCollection>" +
+    "</xf:model>"
+  );
+}
+
 /** 문서 외피로 감싼다 (body 루트 = 전달된 inner XML) */
 function wrapDocument(screenName: string, bodyInner: string): string {
   return (

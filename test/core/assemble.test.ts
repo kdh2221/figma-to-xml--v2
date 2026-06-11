@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderRegion, renderSnippet, assemblePage } from "../../src/core/assemble.js";
+import { renderRegion, renderSnippet, assemblePage, buildModelXml } from "../../src/core/assemble.js";
 import { serialize } from "../../src/core/xml.js";
 import type { FigmaNode } from "../../src/core/types.js";
 
@@ -98,5 +98,23 @@ describe("assemblePage", () => {
     const xml = assemblePage(r4, { c1: "tree" });
     expect(xml).toContain("<w2:treeview");
     expect(xml).toContain('meta_snippetName="7_01 트리"');
+  });
+});
+
+describe("buildModelXml", () => {
+  it("grid page emits dataCollection/dataList1 with col1..col15", () => {
+    const xml = buildModelXml(true);
+    expect(xml).toContain('<w2:dataCollection baseNode="map">');
+    expect(xml).toContain('id="dataList1"');
+    expect(xml).toContain('<w2:column id="col1" name="name1" dataType="text"/>');
+    expect(xml).toContain('<w2:column id="col15" name="name15" dataType="text"/>');
+    expect(xml).not.toContain('col16');
+    expect((xml.match(/<w2:column /g) ?? []).length).toBe(15);
+    expect((xml.match(/<w2:row\/>/g) ?? []).length).toBe(5);
+    expect(xml).not.toContain("<xf:instance>");
+  });
+  it("non-grid page emits the empty instance model", () => {
+    const xml = buildModelXml(false);
+    expect(xml).toBe('<xf:model><xf:instance><data xmlns=""/></xf:instance></xf:model>');
   });
 });
