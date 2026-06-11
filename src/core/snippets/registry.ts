@@ -4,7 +4,7 @@ import { classifyRegion } from "../regions.js";
 import { buildSplit } from "./builders/split.js";
 import { buildTitle } from "./builders/title.js";
 import { buildSearch } from "./builders/search.js";
-import { buildTableForNode } from "./builders/table.js";
+import { buildTableForNode, buildListTableForNode, buildMultiTableForNode } from "./builders/table.js";
 import { buildTab } from "./builders/tab.js";
 import * as SF from "./builders/singleForm.js";
 import * as MF from "./builders/multiForm.js";
@@ -41,6 +41,10 @@ export const SNIPPETS: SnippetDef[] = [
   def("table-1", "05_입출력테이블", "입출력테이블", "5_01 테이블(1단)", "1단", (n) => buildTableForNode(n, 1)),
   def("table-2", "05_입출력테이블", "입출력테이블", "5_02 테이블(2단)", "2단", (n) => buildTableForNode(n, 2)),
   def("table-3", "05_입출력테이블", "입출력테이블", "5_03 테이블(3단)", "3단", (n) => buildTableForNode(n, 3)),
+  def("table-4", "05_입출력테이블", "입출력테이블", "5_04 테이블(4단)", "4단", (n) => buildTableForNode(n, 4)),
+  def("table-5", "05_입출력테이블", "입출력테이블", "5_05 테이블(5단)", "5단", (n) => buildTableForNode(n, 5)),
+  def("table-list", "05_입출력테이블", "입출력테이블", "5_06 테이블(목록형)", "목록형", (n) => buildListTableForNode(n)),
+  def("table-multi", "05_입출력테이블", "입출력테이블", "5_07 테이블(멀티형)", "멀티형", (n) => buildMultiTableForNode(n)),
   // 06_그리드
   def("grid", "06_그리드", "그리드", "6_01 그리드", "그리드", (n) => ST.buildGridForNode(n)),
   // 07_트리
@@ -51,22 +55,33 @@ export const SNIPPETS: SnippetDef[] = [
   def("accordion", "10_아코디언", "아코디언", "10_01 아코디언", "아코디언", () => ST.buildAccordion()),
   // 11_단일입력폼
   def("input", "11_단일입력폼", "단일입력폼", "11_05 인풋", "인풋", () => SF.buildInput()),
+  def("input-100", "11_단일입력폼", "단일입력폼", "11_06 인풋(100)", "인풋(100)", () => SF.buildInput("100%")),
   def("select", "11_단일입력폼", "단일입력폼", "11_07 셀렉트", "셀렉트", () => SF.buildSelect()),
+  def("select-100", "11_단일입력폼", "단일입력폼", "11_08 셀렉트(100)", "셀렉트(100)", () => SF.buildSelect("100%")),
   def("radio", "11_단일입력폼", "단일입력폼", "11_02 라디오", "라디오", () => SF.buildRadio()),
   def("checkbox", "11_단일입력폼", "단일입력폼", "11_03 체크박스", "체크박스", () => SF.buildCheckboxGroup()),
+  def("checkbox-single", "11_단일입력폼", "단일입력폼", "11_04 체크박스(단일)", "체크박스(단일)", () => SF.buildCheckboxSingle()),
   def("calendar-ymd", "11_단일입력폼", "단일입력폼", "11_09 인풋캘린더(년월일)", "캘린더(년월일)", () => SF.buildCalendar("yearMonthDate")),
+  def("calendar-100", "11_단일입력폼", "단일입력폼", "11_10 인풋캘린더(100)", "캘린더(100)", () => SF.buildCalendar("yearMonthDate", "100%")),
   def("calendar-ym", "11_단일입력폼", "단일입력폼", "11_11 인풋캘린더(년월)", "캘린더(년월)", () => SF.buildCalendar("yearMonth")),
+  def("calendar-year", "11_단일입력폼", "단일입력폼", "11_12 인풋캘린더(년)", "캘린더(년)", () => SF.buildCalendar("year")),
   def("textarea", "11_단일입력폼", "단일입력폼", "11_13 텍스트에어리어", "텍스트에어리어", () => SF.buildTextarea()),
-  def("checkcombo", "11_단일입력폼", "단일입력폼", "11_17 체크콤보박스", "체크콤보박스", () => SF.buildCheckCombo()),
+  def("textarea-100", "11_단일입력폼", "단일입력폼", "11_14 텍스트에어리어(100)", "텍스트에어리어(100)", () => SF.buildTextarea("100%")),
   def("autocomplete", "11_단일입력폼", "단일입력폼", "11_15 오토컴플릿", "오토컴플릿", () => SF.buildAutoComplete()),
+  def("autocomplete-100", "11_단일입력폼", "단일입력폼", "11_16 오토컴플릿(100)", "오토컴플릿(100)", () => SF.buildAutoComplete("100%")),
+  def("checkcombo", "11_단일입력폼", "단일입력폼", "11_17 체크콤보박스", "체크콤보박스", () => SF.buildCheckCombo()),
+  def("checkcombo-100", "11_단일입력폼", "단일입력폼", "11_18 체크콤보박스(100)", "체크콤보박스(100)", () => SF.buildCheckCombo("100%")),
   def("upload", "11_단일입력폼", "단일입력폼", "11_19 업로드", "업로드", () => SF.buildUpload()),
+  def("upload-100", "11_단일입력폼", "단일입력폼", "11_20 업로드(100)", "업로드(100)", () => SF.buildUpload("100%")),
+  def("form-text", "11_단일입력폼", "단일입력폼", "11_01 텍스트", "텍스트", () => SF.buildFormText()),
   // 12_다중입력폼
+  def("code", "12_다중입력폼", "다중입력폼", "12_01 코드조회", "코드조회", () => SF.buildInput("150px")),
+  def("code-detail", "12_다중입력폼", "다중입력폼", "12_02 코드상세조회", "코드상세조회", () => MF.buildCodeSearch()),
   def("addr", "12_다중입력폼", "다중입력폼", "12_06 주소", "주소", () => MF.buildAddress()),
   def("email", "12_다중입력폼", "다중입력폼", "12_04 이메일", "이메일", () => MF.buildEmail()),
   def("phone", "12_다중입력폼", "다중입력폼", "12_03 전화번호", "전화번호", () => MF.buildPhone()),
   def("period", "12_다중입력폼", "다중입력폼", "12_05 기간조회", "기간조회", () => MF.buildPeriod()),
   def("amount", "12_다중입력폼", "다중입력폼", "12_07 금액", "금액", () => MF.buildAmount()),
-  def("code", "12_다중입력폼", "다중입력폼", "12_01 코드조회", "코드조회", () => MF.buildCodeSearch()),
   // 13_메시지
   def("msg-list", "13_메시지", "메시지", "13_08 리스트", "리스트", () => ST.buildMessageList()),
   // 99_기타
