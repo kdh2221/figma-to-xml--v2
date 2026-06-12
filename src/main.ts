@@ -3,7 +3,7 @@ import { collectTextNodes, textOf } from "./core/extract.js";
 import { prettyXml } from "./core/format.js";
 import { analyzeRegions } from "./core/regions.js";
 import { catalogDescriptor } from "./core/snippets/registry.js";
-import { assemblePage } from "./core/assemble.js";
+import { convertPageRecursive } from "./core/recursive/index.js";
 
 /** figma SceneNode의 덕타입(테스트용). 실제로는 figma SceneNode가 들어온다. */
 export interface SceneLike {
@@ -87,7 +87,7 @@ if (typeof figma !== "undefined") {
     if (msg.type === "generate") {
       const scene = selectedOne();
       if (!scene) return;
-      const xml = assemblePage(toFigmaNode(scene), msg.snippetById ?? {});
+      const xml = convertPageRecursive(toFigmaNode(scene));
       figma.ui.postMessage({ type: "result", xml: prettyXml(xml), warnings: [] });
       return;
     }
