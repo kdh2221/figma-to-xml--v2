@@ -75,7 +75,7 @@ export function buildModelXml(hasGrid: boolean): string {
 }
 
 /** 문서 외피로 감싼다 (body 루트 = 전달된 inner XML). hasGrid면 모델에 dataList1 스캐폴드. */
-function wrapDocument(screenName: string, bodyInner: string, hasGrid: boolean): string {
+export function wrapDocument(screenName: string, bodyInner: string, hasGrid: boolean): string {
   return (
     '<?xml version="1.0" encoding="UTF-8"?>' +
     '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" ' +
