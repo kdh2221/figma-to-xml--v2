@@ -5,14 +5,15 @@ import * as SF from "../snippets/builders/singleForm.js";
 import { buildButton } from "../snippets/builders/button.js";
 import {
   isLabelCell, isTdCell, isSelectbox, isBoxItem, isButtonNode,
-  isRequiredLabel, controlKindOfBoxItem,
+  isRequiredLabel, controlKindOfBoxItem, isTable,
 } from "./names.js";
 
 type Role = "th" | "td";
 interface Cell { role: Role; node: FigmaNode; }
+type Row = (Cell | null)[];
 
 const isCellBoundary = (n: FigmaNode): boolean =>
-  isLabelCell(n) || isTdCell(n) || isSelectbox(n) || isBoxItem(n) || isButtonNode(n);
+  isLabelCell(n) || isTdCell(n) || isSelectbox(n) || isBoxItem(n) || isButtonNode(n) || isTable(n);
 const isControl = (n: FigmaNode): boolean =>
   isSelectbox(n) || isBoxItem(n) || isButtonNode(n);
 
@@ -54,7 +55,9 @@ function thCell(n: FigmaNode): XmlEl {
 
 function tdCell(n: FigmaNode): XmlEl {
   let inner: XmlEl[];
-  if (isControl(n)) {
+  if (isTable(n)) {
+    inner = [buildTableXml(n)];
+  } else if (isControl(n)) {
     inner = [buildControl(n)];
   } else {
     const ctrls: FigmaNode[] = [];
@@ -68,13 +71,13 @@ function tdCell(n: FigmaNode): XmlEl {
 }
 
 /** table의 행 격자 복원 (좌표 없이: 중첩 + layoutMode) */
-function tableRows(table: FigmaNode): Cell[][] {
+function tableRows(table: FigmaNode): Row[] {
   const groups = table.children.map(collectCells).filter((g) => g.length > 0);
   if (table.layoutMode !== "HORIZONTAL") return groups; // 행-major
   // 열-major → 전치
   const maxLen = groups.reduce((m, g) => Math.max(m, g.length), 0);
-  const rows: Cell[][] = [];
-  for (let i = 0; i < maxLen; i++) rows.push(groups.map((g) => g[i]).filter((c): c is Cell => !!c));
+  const rows: Row[] = [];
+  for (let i = 0; i < maxLen; i++) rows.push(groups.map((g) => g[i] ?? null));
   return rows;
 }
 
@@ -83,13 +86,19 @@ export function buildTableXml(table: FigmaNode): XmlEl {
   const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
   const colgroup = el("xf:group", { tagname: "colgroup" },
     Array.from({ length: cols }, (_, i) => {
-      const role = rows.find((r) => r[i])?.[i]?.role;
+      const role = rows.find((row) => row[i])?.[i]?.role;
       return role === "th"
         ? el("xf:group", { style: "width:100px;", tagname: "col" })
         : el("xf:group", { tagname: "col" });
     }));
+  const emptyTd = (): XmlEl => el("xf:group", { class: "w2tb_td", tagname: "td" });
   const trs = rows.map((r) =>
-    el("xf:group", { tagname: "tr" }, r.map((c) => (c.role === "th" ? thCell(c.node) : tdCell(c.node)))));
+    el("xf:group", { tagname: "tr" },
+      Array.from({ length: cols }, (_, i) => {
+        const c = r[i];
+        if (!c) return emptyTd();
+        return c.role === "th" ? thCell(c.node) : tdCell(c.node);
+      })));
   return el("xf:group", { class: "tblbox", id: "", style: "" }, [
     el("xf:group", { class: "w2tb tbl", tagname: "table" }, [colgroup, ...trs]),
   ]);
