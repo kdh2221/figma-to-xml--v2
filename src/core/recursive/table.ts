@@ -70,7 +70,9 @@ function tdCell(n: FigmaNode): XmlEl {
   return el("xf:group", { class: "w2tb_td", tagname: "td" }, inner);
 }
 
-/** table의 행 격자 복원 (좌표 없이: 중첩 + layoutMode) */
+/** table의 행 격자 복원 (좌표 없이: 중첩 + layoutMode).
+ *  전제: 셀(label/td)은 table 직계 자식(행/열 래퍼) 안에 들어있다.
+ *  셀이 table 직계라면(래퍼 없음) 각 그룹이 비어 빈 테이블이 된다 — 슬라이스 1 한계. */
 function tableRows(table: FigmaNode): Row[] {
   const groups = table.children.map(collectCells).filter((g) => g.length > 0);
   if (table.layoutMode !== "HORIZONTAL") return groups; // 행-major
