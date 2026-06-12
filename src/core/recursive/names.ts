@@ -20,14 +20,16 @@ export function isRequiredLabel(n: FigmaNode): boolean {
 
 /** item/boxitem 안의 아이콘 인스턴스 이름으로 컨트롤 종류 추론 */
 export function controlKindOfBoxItem(n: FigmaNode): "input" | "select" | "calendar" {
+  // calendar > select > input 우선순위. calendar는 가장 구체적이라 만나면 즉시 확정.
   let kind: "input" | "select" | "calendar" = "input";
-  const walk = (m: FigmaNode) => {
+  const walk = (m: FigmaNode): boolean => {
     for (const c of m.children) {
-      const nm = c.name.replace(/[\x00-\x1f]/g, "").trim().toLowerCase();
-      if (nm.includes("calendar")) kind = "calendar";
-      else if (nm.includes("arrow-down")) kind = "select";
-      walk(c);
+      const nm = cleanName(c);
+      if (nm.includes("calendar")) { kind = "calendar"; return true; }
+      if (nm.includes("arrow-down")) kind = "select";
+      if (walk(c)) return true;
     }
+    return false;
   };
   walk(n);
   return kind;
